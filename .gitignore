@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.pyd
+.Python
+venv/
+env/
+.env
+*.egg-info/
+dist/
+build/
+*.egg
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# ML Artifacts (keep .gitkeep)
+ml_models/artifacts/*.pkl
+ml_models/artifacts/*.joblib
+ml_models/artifacts/*.bin
+!ml_models/artifacts/.gitkeep
+
+# Temp uploads
+temp_uploads/*
+!temp_uploads/.gitkeep
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
