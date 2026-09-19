@@ -279,7 +279,30 @@ def analyse_file(file_bytes: bytes, original_filename: str) -> Dict[str, Any]:
     result["packer_detected"] = packer_detected
 
     # ── Suspicious import categories ──────────────────────────────────────
+    # Primary source: parsed PE import table
     result["suspicious_import_categories"] = _classify_suspicious_imports(imports)
+
+    # Fallback: if PE imports couldn't be parsed, scan printable strings too.
+    # Real malware often obfuscates import tables but leaves API name strings.
+    if not imports and result.get("printable_strings"):
+        # Treat each printable string as if it were an import function name
+        string_based = _classify_suspicious_imports(result["printable_strings"])
+        # Merge — string-based findings are labelled to distinguish them
+        for category, funcs in string_based.items():
+            if category not in result["suspicious_import_categories"]:
+                result["suspicious_import_categories"][category] = funcs
+            # Also flag ransomware-specific strings
+        # Check for ransomware-specific plaintext indicators
+        ransomware_strings = ["YOUR_FILES_HAVE_BEEN_ENCRYPTED", "README_DECRYPT",
+                              "bitcoin", ".locked", ".encrypted", ".crypt", "ransom"]
+        matched_ransom = [s for s in result["printable_strings"]
+                          if any(r.lower() in s.lower() for r in ransomware_strings)]
+        if matched_ransom:
+            existing = result["suspicious_import_categories"].get("Ransomware Indicators", [])
+            result["suspicious_import_categories"]["Ransomware Indicators"] = list(
+                set(existing + matched_ransom[:5])
+            )
+
 
     # ── Threat indicators ─────────────────────────────────────────────────
     indicators: List[str] = []
