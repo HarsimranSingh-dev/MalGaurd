@@ -9,7 +9,7 @@ Accepts a free-text description of observed symptoms and returns:
 """
 
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -90,7 +90,7 @@ async def diagnose(
         session_id=session_id,
         symptom_text=request.symptoms,
         results=results,
-        created_at=datetime.utcnow(),
+        created_at=datetime.now(timezone.utc),
     )
 
 

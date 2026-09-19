@@ -3,7 +3,7 @@ MalGuard Backend – SQLAlchemy ORM models + async engine bootstrap.
 All tables use Integer PKs with UUID-based public identifiers for security.
 """
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 
 from sqlalchemy import (
     Column, Integer, String, Float, Text, DateTime,
@@ -61,7 +61,7 @@ class AnalysisReport(Base):
     id = Column(Integer, primary_key=True, index=True)
     public_id = Column(String(36), unique=True, index=True,
                        default=lambda: str(uuid.uuid4()))
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
 
     # File metadata
     filename = Column(String(255), nullable=False)
@@ -126,7 +126,7 @@ class DiagnosisSession(Base):
     id = Column(Integer, primary_key=True, index=True)
     public_id = Column(String(36), unique=True, index=True,
                        default=lambda: str(uuid.uuid4()))
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     symptom_text = Column(Text, nullable=False)
     matched_family = Column(String(64))
     confidence_score = Column(Float)
