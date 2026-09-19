@@ -244,10 +244,38 @@ def classify(static_result: Dict[str, Any]) -> Dict[str, Any]:
         prediction, confidence, probabilities,
         shap_explanation, mitre_tactics
     """
+    # ── Non-PE Early Exit ─────────────────────────────────────────────────────
+    # The ML model was trained exclusively on PE (Windows executable) features.
+    # Applying it to PDFs, ZIPs, scripts, etc. produces meaningless predictions.
+    # For non-PE files, trust the static analysis verdict only.
+    if not static_result.get("is_pe", False):
+        # Still check static indicators — a non-PE can have suspicious strings
+        indicators = static_result.get("threat_indicators", [])
+        if indicators:
+            prediction = "Suspicious Script"
+            confidence = 0.70
+        else:
+            prediction = "Clean"
+            confidence = 0.95
+
+        mime = static_result.get("mime_type", "")
+        file_note = f"Non-PE file ({mime}) — ML classifier skipped; verdict based on static analysis only."
+
+        return {
+            "prediction": prediction,
+            "confidence": confidence,
+            "probabilities": {"Clean": confidence, "Non-PE": round(1 - confidence, 2)},
+            "shap_explanation": [],
+            "mitre_tactics": [],
+            "note": file_note,
+        }
+
+    # ── PE files — run full ML pipeline ──────────────────────────────────────
     _load_models()
 
     X_raw = build_feature_vector(static_result)
     X_scaled = _scaler.transform(X_raw)
+
 
     # ── Prediction ────────────────────────────────────────────────────────
     pred_idx = _classifier.predict(X_scaled)[0]

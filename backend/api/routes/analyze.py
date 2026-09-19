@@ -83,15 +83,35 @@ async def analyze_file(
     prediction = ml_result.get("prediction", "Unknown")
     confidence = ml_result.get("confidence", 0.0)
     preliminary = static_result.get("preliminary_verdict", "SUSPICIOUS")
+    is_pe = static_result.get("is_pe", False)
 
-    if prediction == "Clean" and preliminary == "CLEAN":
-        verdict = "CLEAN"
+    # ── Verdict decision tree ─────────────────────────────────────────────
+    # Rule 1: Non-PE files — rely 100% on static analysis
+    if not is_pe:
+        if prediction == "Suspicious Script":
+            verdict = "SUSPICIOUS"
+        else:
+            # Static analysis found nothing bad → CLEAN
+            verdict = "CLEAN" if preliminary == "CLEAN" else "SUSPICIOUS"
+
+    # Rule 2: PE files with strong ML signal → trust ML
     elif prediction in ("Ransomware", "Trojan", "Worm", "Spyware") and confidence > 0.6:
         verdict = "MALICIOUS"
-    elif preliminary == "MALICIOUS" or (confidence > 0.4 and prediction != "Clean"):
+
+    # Rule 3: PE file, ML says Clean AND static says Clean → definitely Clean
+    elif prediction == "Clean" and preliminary == "CLEAN":
+        verdict = "CLEAN"
+
+    # Rule 4: Static analysis found something bad → at least Suspicious
+    elif preliminary == "MALICIOUS":
+        verdict = "MALICIOUS"
+    elif preliminary == "SUSPICIOUS" or (confidence > 0.4 and prediction not in ("Clean", "Adware")):
         verdict = "SUSPICIOUS"
+
+    # Rule 5: Fallback — trust static
     else:
         verdict = preliminary
+
 
     # ── 6. Persist to database ────────────────────────────────────────────
     public_id = str(uuid.uuid4())
