@@ -50,7 +50,10 @@ def generate_synthetic_dataset(n_samples: int = 5000, seed: int = 42):
             row[8], row[9], row[10], row[11], row[12], row[13]
         )
         # Deterministic rules based on feature combinations
-        if rans > 0.5 and hi > 0.5 and is_pe > 0.5:
+        # Adware: non-PE file with some network activity (browser hijacker pattern)
+        if is_pe < 0.4 and net > 0.35:
+            labels.append("Adware")
+        elif rans > 0.5 and hi > 0.5 and is_pe > 0.5:
             labels.append("Ransomware")
         elif pi > 0.5 and pers > 0.5 and is_pe > 0.5:
             labels.append("Trojan")
@@ -58,8 +61,6 @@ def generate_synthetic_dataset(n_samples: int = 5000, seed: int = 42):
             labels.append("Worm")
         elif ca > 0.6 and ent > 5.0:
             labels.append("Spyware")
-        elif rng.random() > 0.9 and is_pe < 0.3:
-            labels.append("Adware")
         else:
             labels.append("Clean")
 
@@ -72,7 +73,7 @@ def train():
     print("=" * 60)
 
     # 1. Dataset
-    print("\n[1/5] Generating dataset…")
+    print("\n[1/5] Generating dataset...")
     X, y_raw = generate_synthetic_dataset(n_samples=5000)
     print(f"      Samples: {len(X)}")
     from collections import Counter
@@ -81,13 +82,13 @@ def train():
         print(f"      {fam:15s}: {count:5d} ({count/len(y_raw)*100:.1f}%)")
 
     # 2. Encode labels
-    print("\n[2/5] Encoding labels…")
+    print("\n[2/5] Encoding labels...")
     le = LabelEncoder()
     y = le.fit_transform(y_raw)
     print(f"      Classes: {list(le.classes_)}")
 
     # 3. Scale features
-    print("\n[3/5] Scaling features…")
+    print("\n[3/5] Scaling features...")
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42, stratify=y
     )
@@ -96,7 +97,7 @@ def train():
     X_test_s = scaler.transform(X_test)
 
     # 4. Train
-    print("\n[4/5] Training GradientBoostingClassifier…")
+    print("\n[4/5] Training GradientBoostingClassifier...")
     clf = GradientBoostingClassifier(
         n_estimators=300,
         max_depth=4,
@@ -106,7 +107,10 @@ def train():
         random_state=42,
         verbose=0,
     )
-    clf.fit(X_train_s, y_train)
+    # Use sample weights to fix class imbalance
+    from sklearn.utils.class_weight import compute_sample_weight
+    sample_weights = compute_sample_weight(class_weight="balanced", y=y_train)
+    clf.fit(X_train_s, y_train, sample_weight=sample_weights)
 
     # 5. Evaluate
     print("\n[5/5] Evaluation on held-out test set:")
@@ -118,19 +122,20 @@ def train():
     fi = sorted(zip(FEATURE_NAMES, clf.feature_importances_),
                 key=lambda x: x[1], reverse=True)
     for name, imp in fi[:10]:
-        bar = "█" * int(imp * 50)
+        bar = "-" * int(imp * 50)  # ASCII bars (Windows-safe)
         print(f"  {name:30s} {imp:.4f} {bar}")
 
     # 6. Persist
-    print("\nSaving model artifacts…")
+    print("\nSaving model artifacts...")
     Path(settings.ML_MODEL_PATH).parent.mkdir(parents=True, exist_ok=True)
     joblib.dump(clf, settings.ML_MODEL_PATH)
     joblib.dump(scaler, settings.SCALER_PATH)
     joblib.dump(le, settings.LABEL_ENCODER_PATH)
-    print(f"  Classifier  → {settings.ML_MODEL_PATH}")
-    print(f"  Scaler      → {settings.SCALER_PATH}")
-    print(f"  Label Enc.  → {settings.LABEL_ENCODER_PATH}")
-    print("\n✅ Training complete!")
+    print(f"  Classifier  -> {settings.ML_MODEL_PATH}")
+    print(f"  Scaler      -> {settings.SCALER_PATH}")
+    print(f"  Label Enc.  -> {settings.LABEL_ENCODER_PATH}")
+    print("\n[DONE] Training complete!")
+
 
 
 if __name__ == "__main__":
