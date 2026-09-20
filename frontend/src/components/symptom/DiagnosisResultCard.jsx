@@ -54,11 +54,17 @@ export default function DiagnosisResultCard({ diagnosis }) {
         {diagnosis.mitreTactics && diagnosis.mitreTactics.length > 0 && (
           <div className="flex flex-wrap items-center gap-2 pt-2">
             <span className="text-xs font-mono text-[#7c828d] uppercase mr-1">Associated MITRE Techniques:</span>
-            {diagnosis.mitreTactics.map((t) => (
-              <span key={t.id} className="text-xs font-mono px-2.5 py-1 rounded-lg bg-[#ffffff] border border-[#e5e0d8] text-[#1c1e21] shadow-subtle">
-                <strong className="text-[#a81c1c]">{t.id}</strong> {t.name}
-              </span>
-            ))}
+            {diagnosis.mitreTactics.map((t, idx) => {
+              const isObj = typeof t === 'object' && t !== null;
+              const tacticStr = isObj ? `${t.id} – ${t.name}` : String(t);
+              const parts = tacticStr.split(' – ');
+              const key = isObj ? t.id : idx;
+              return (
+                <span key={key} className="text-xs font-mono px-2.5 py-1 rounded-lg bg-[#ffffff] border border-[#e5e0d8] text-[#1c1e21] shadow-subtle">
+                  <strong className="text-[#a81c1c]">{parts[0]}</strong>{parts[1] ? ` – ${parts[1]}` : ''}
+                </span>
+              );
+            })}
           </div>
         )}
       </div>

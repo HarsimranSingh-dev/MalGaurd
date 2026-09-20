@@ -130,7 +130,7 @@ export default function FileScannerPage({ initialFile }) {
                 </div>
                 <div className="p-2.5 rounded-lg bg-[#f8f7f4] border border-[#e5e0d8]">
                   <span className="text-[#7c828d] font-mono text-[10px] uppercase block">Scan Timestamp:</span>
-                  <span className="text-[#1c1e21] font-mono font-bold truncate block">{scanResult.timestamp.split(' ')[1]}</span>
+                   <span className="text-[#1c1e21] font-mono font-bold truncate block">{(scanResult.timestamp || '').split(' ')[1] || scanResult.timestamp || '--'}</span>
                 </div>
               </div>
             </div>

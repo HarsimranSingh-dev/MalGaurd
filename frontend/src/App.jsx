@@ -63,12 +63,10 @@ export default function App() {
         <footer className="mt-auto border-t border-[#e5e0d8] bg-[#f1ede6] px-4 sm:px-8 py-4 text-xs font-mono text-[#525866] flex flex-col sm:flex-row items-center justify-between gap-2">
           <div className="flex items-center space-x-2">
             <span className="w-2 h-2 rounded-full bg-[#226343]"></span>
-            <span className="font-medium text-[#1c1e21]">MalGuard CyberSOC Platform v2.4</span>
-            <span>•</span>
-            <span className="text-[#226343] font-semibold">FastAPI API-Ready</span>
+            <span className="font-medium text-[#1c1e21]">MalGuard v1.0</span>
           </div>
           <div className="text-[#7c828d]">
-            Built for enterprise malware triage & incident response
+            Malware analysis & incident response platform
           </div>
         </footer>
       </div>

@@ -40,9 +40,9 @@ export default function ScanHistoryPage() {
 
   const filteredReports = reports.filter((r) => {
     const matchesSearch = 
-      r.filename.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (r.sha256 && r.sha256.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      r.aiPrediction.toLowerCase().includes(searchQuery.toLowerCase());
+      (r.filename || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+      ((r.sha256 || '').toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (r.aiPrediction || '').toLowerCase().includes(searchQuery.toLowerCase());
 
     const matchesVerdict = verdictFilter === 'ALL' || r.verdict === verdictFilter;
     return matchesSearch && matchesVerdict;
