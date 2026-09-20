@@ -1,6 +1,12 @@
-import React, { useState } from 'react';
-import { X, BookOpen, Copy, Check, ShieldAlert, CheckCircle2, Terminal } from 'lucide-react';
-import PlaybookChecklist from '../symptom/PlaybookChecklist';
+import React from 'react';
+import { X, BookOpen, ShieldAlert, Trash2, RotateCcw, ShieldCheck } from 'lucide-react';
+
+const phases = [
+  { key: 'contain',   emoji: '🔴', title: 'Phase 1: Containment',           icon: ShieldAlert },
+  { key: 'eradicate', emoji: '🟠', title: 'Phase 2: Eradication',            icon: Trash2 },
+  { key: 'recover',   emoji: '🟢', title: 'Phase 3: Recovery',               icon: RotateCcw },
+  { key: 'prevent',   emoji: '🔵', title: 'Phase 4: Prevention & Hardening', icon: ShieldCheck },
+];
 
 export default function FamilyPlaybookModal({ family, onClose }) {
   if (!family) return null;
@@ -11,7 +17,7 @@ export default function FamilyPlaybookModal({ family, onClose }) {
         {/* Header */}
         <div className="p-6 border-b border-[#e5e0d8] flex items-center justify-between bg-[#f8f7f4] shrink-0">
           <div className="flex items-center space-x-3">
-            <div className="p-2.5 rounded-xl bg-opacity-20 border border-current/40" style={{ color: family.color, backgroundColor: `${family.color}20` }}>
+            <div className="p-2.5 rounded-xl border" style={{ color: family.color, backgroundColor: `${family.color}20`, borderColor: `${family.color}40` }}>
               <BookOpen className="w-5 h-5" />
             </div>
             <div>
@@ -27,31 +33,23 @@ export default function FamilyPlaybookModal({ family, onClose }) {
                   {family.severity} SEVERITY
                 </span>
               </div>
-              <p className="text-xs font-mono text-[#525866] mt-0.5">
-                Targeted Containment & Eradication Strategy
-              </p>
+              <p className="text-xs font-mono text-[#525866] mt-0.5">Targeted Containment & Eradication Strategy</p>
             </div>
           </div>
-
-          <button 
-            onClick={onClose}
-            className="p-2 rounded-lg bg-[#f1ede6] text-[#525866] hover:text-[#1c1e21] transition-colors"
-          >
+          <button onClick={onClose} className="p-2 rounded-lg bg-[#f1ede6] text-[#525866] hover:text-[#1c1e21] transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Scrollable Content */}
         <div className="p-6 space-y-6 overflow-y-auto flex-1 bg-white">
-          {/* Overview Callout */}
+          {/* Overview */}
           <div className="p-4 rounded-xl bg-[#f8f7f4] border border-[#e5e0d8]">
             <h4 className="text-xs font-mono uppercase tracking-wider text-[#525866] mb-1 font-semibold">Threat Overview:</h4>
-            <p className="text-sm text-[#1c1e21] leading-relaxed">
-              {family.description}
-            </p>
+            <p className="text-sm text-[#1c1e21] leading-relaxed">{family.description}</p>
           </div>
 
-          {/* Indicators of Compromise summary */}
+          {/* IoCs */}
           {family.indicators && (
             <div className="p-4 rounded-xl bg-[#f8f7f4] border border-[#e5e0d8]">
               <h4 className="text-xs font-mono uppercase tracking-wider text-[#525866] mb-2 font-semibold">Common Indicators of Compromise (IoCs):</h4>
@@ -66,17 +64,38 @@ export default function FamilyPlaybookModal({ family, onClose }) {
             </div>
           )}
 
-          {/* Full Interactive 4-Phase Playbook */}
-          <PlaybookChecklist playbook={family.playbook} />
+          {/* 4-Phase Playbook */}
+          {family.playbook && (
+            <div className="space-y-4">
+              {phases.map((phase) => {
+                const items = (family.playbook[phase.key] || []);
+                if (items.length === 0) return null;
+                return (
+                  <div key={phase.key} className="rounded-xl bg-white border border-[#e5e0d8] overflow-hidden shadow-sm">
+                    <div className="p-4 bg-[#f8f7f4] border-b border-[#e5e0d8] flex items-center space-x-3">
+                      <span className="text-lg">{phase.emoji}</span>
+                      <h4 className="text-sm font-bold text-[#1c1e21]">{phase.title}</h4>
+                      <span className="ml-auto text-[11px] font-mono text-[#7c828d]">{items.length} steps</span>
+                    </div>
+                    <div className="p-4 space-y-3">
+                      {items.map((item, idx) => (
+                        <div key={item.id || idx} className="p-3.5 rounded-lg bg-[#f8f7f4] border border-[#e5e0d8]">
+                          <div className="text-xs font-mono font-bold text-[#1c1e21] mb-1">{item.title}</div>
+                          <p className="text-xs text-[#525866] leading-relaxed">{item.text || item.desc || ''}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* Footer */}
         <div className="p-4 border-t border-[#e5e0d8] bg-[#f8f7f4] flex items-center justify-between text-xs text-[#525866] font-mono shrink-0">
           <span>MalGuard Threat Intel Repository</span>
-          <button
-            onClick={onClose}
-            className="px-4 py-2 rounded-xl bg-[#226343] hover:bg-[#1b5036] text-white font-semibold transition-colors shadow-sm"
-          >
+          <button onClick={onClose} className="px-4 py-2 rounded-xl bg-[#226343] hover:bg-[#1b5036] text-white font-semibold transition-colors shadow-sm">
             Close Playbook
           </button>
         </div>
