@@ -13,7 +13,7 @@ export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://malgua
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 45000,
+  timeout: 12000,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -235,7 +235,7 @@ export async function diagnoseSymptoms(symptomText) {
       const response = await apiClient.post('/api/diagnose', { 
         symptoms: symptomText,
         top_k: 1 
-      });
+      }, { timeout: 6000 });
 
       const data = response.data;
       const match = data.results && data.results.length > 0 ? data.results[0] : null;
