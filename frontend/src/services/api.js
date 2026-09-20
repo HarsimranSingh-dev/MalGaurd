@@ -249,12 +249,13 @@ export async function diagnoseSymptoms(symptomText) {
           prevent: []
         };
 
-        (match.playbook || []).forEach((step) => {
+        (match.playbook || []).forEach((step, idx) => {
           const phase = (step.phase || '').toLowerCase();
           const item = {
+            id: step.id || `step-${phase}-${idx}`,
             step: step.step_order,
             title: step.title,
-            desc: step.description,
+            text: step.description || step.text || step.desc || '',
             critical: phase.includes('contain')
           };
           if (phase.includes('contain')) groupedPlaybook.contain.push(item);

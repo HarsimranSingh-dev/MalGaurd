@@ -65,7 +65,7 @@ export default function PlaybookChecklist({ playbook }) {
   // Calculate completion percentage
   const allItems = phases.flatMap(p => p.items);
   const totalCount = allItems.length;
-  const completedCount = allItems.filter(item => completedSteps[item.id]).length;
+  const completedCount = allItems.filter((item, idx) => completedSteps[item.id || idx]).length;
   const percentComplete = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
   const toggleStep = (id) => {
@@ -162,12 +162,14 @@ export default function PlaybookChecklist({ playbook }) {
 
               {/* Checklist Items */}
               <div className="p-4 space-y-3">
-                {phase.items.map((item) => {
-                  const isChecked = !!completedSteps[item.id];
+                {phase.items.map((item, idx) => {
+                  const itemKey = item.id || `${phase.key}-${idx}`;
+                  const isChecked = !!completedSteps[itemKey];
+                  const itemText = item.text || item.desc || '';
                   return (
                     <div
-                      key={item.id}
-                      onClick={() => toggleStep(item.id)}
+                      key={itemKey}
+                      onClick={() => toggleStep(itemKey)}
                       className={`
                         flex items-start space-x-3.5 p-3.5 rounded-lg border transition-all cursor-pointer select-none
                         ${isChecked 
@@ -193,7 +195,7 @@ export default function PlaybookChecklist({ playbook }) {
                           </span>
                         </div>
                         <p className={`text-xs mt-1 leading-relaxed ${isChecked ? 'text-[#7c828d] line-through' : 'text-[#525866]'}`}>
-                          {item.text}
+                          {itemText}
                         </p>
                       </div>
                     </div>
