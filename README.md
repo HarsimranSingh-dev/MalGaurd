@@ -5,6 +5,9 @@
 **Live Demo:** [mal-guard.vercel.app](https://mal-guard.vercel.app/)  
 **Backend API:** Hosted On Render  
 
+> **Note for Judges & Reviewers:**  
+> The backend runs on Render's free tier. If the service has been idle, the initial request might take ~20–30 seconds while the container spins up from cold sleep (the top header badge will turn green to show `API: Connected`). Once awake, it runs smoothly. The frontend also has built-in mock fallbacks so you can test all the flows even during spin-up.
+
 ---
 
 ## Why MalGuard?
