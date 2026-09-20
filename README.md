@@ -71,7 +71,7 @@ MalGuard is built to make binary inspection transparent and interactive. You dro
 - **Machine Learning:** `scikit-learn` (GradientBoostingClassifier), `joblib`
 - **Hosting:** Vercel (Frontend SPA) + Render (FastAPI Web Service)
 
----
+--
 
 ## Project Structure
 
