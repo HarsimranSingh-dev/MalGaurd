@@ -47,6 +47,35 @@ function generateMockSha256(name) {
   return `${hex}49afbf4c8996fb92427ae41e4649b934ca495991b7852b855e3b0c44298fc1c1`.slice(0, 64);
 }
 
+// ── localStorage persistence ───────────────────────────────────────────────
+const LS_KEY = 'malguard_scan_history';
+
+function loadPersistedScans() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+function persistScan(result) {
+  try {
+    const existing = loadPersistedScans();
+    // Avoid duplicates by id
+    const deduped = existing.filter(s => s.id !== result.id);
+    // Keep at most 50 scans in localStorage
+    const updated = [result, ...deduped].slice(0, 50);
+    localStorage.setItem(LS_KEY, JSON.stringify(updated));
+  } catch {
+    // localStorage full or unavailable — silently skip
+  }
+}
+
+export function clearScanHistory() {
+  localStorage.removeItem(LS_KEY);
+}
+
 /**
  * File Analysis API Endpoint: POST /api/analyze
  */
@@ -107,6 +136,7 @@ export async function analyzeFile(fileOrMock) {
       };
 
       mockRecentScans.unshift(result);
+      persistScan(result);
       return result;
     } catch (err) {
       console.warn('Backend /api/analyze failed or unreachable, falling back to simulated analysis engine:', err.message);
@@ -192,6 +222,7 @@ export async function analyzeFile(fileOrMock) {
   };
 
   mockRecentScans.unshift(result);
+  persistScan(result);
   return result;
 }
 
@@ -317,6 +348,9 @@ export async function diagnoseSymptoms(symptomText) {
  * Scan Reports / History API Endpoint: GET /api/reports
  */
 export async function getScanReports() {
+  // Always load persisted user scans first (survives page refresh)
+  const persistedScans = loadPersistedScans();
+
   if (!USE_MOCK) {
     try {
       const response = await apiClient.get('/api/reports');
@@ -338,16 +372,27 @@ export async function getScanReports() {
             ? new Date(r.created_at).toISOString().replace('T', ' ').slice(0, 19)
             : new Date().toISOString().replace('T', ' ').slice(0, 19),
           mitreTactics: [],
-          threatIndicators: ['Verified and persisted in live PostgreSQL/SQLite database'],
+          threatIndicators: ['Verified and persisted in live database'],
         }));
-        return [...mappedReports, ...mockRecentScans];
+        // Merge: persisted user scans + backend reports + mock, deduplicated by id
+        const seen = new Set();
+        return [...persistedScans, ...mappedReports, ...mockRecentScans].filter(s => {
+          if (seen.has(s.id)) return false;
+          seen.add(s.id);
+          return true;
+        });
       }
     } catch (err) {
-      console.warn('Backend /api/reports unavailable, using mock data:', err.message);
+      console.warn('Backend /api/reports unavailable, using local + mock data:', err.message);
     }
   }
-  await new Promise((res) => setTimeout(res, 250));
-  return [...mockRecentScans];
+  // Merge persisted scans with mock data (deduped)
+  const seen = new Set();
+  return [...persistedScans, ...mockRecentScans].filter(s => {
+    if (seen.has(s.id)) return false;
+    seen.add(s.id);
+    return true;
+  });
 }
 
 /**
@@ -409,17 +454,26 @@ export async function getDashboardStats() {
     // Non-critical fallback
   }
 
+  const persistedScans = loadPersistedScans();
+  // Merge persisted + mock, deduped
+  const seen = new Set();
+  const allScans = [...persistedScans, ...mockRecentScans].filter(s => {
+    if (seen.has(s.id)) return false;
+    seen.add(s.id);
+    return true;
+  });
+
   await new Promise((res) => setTimeout(res, 250));
   return {
     stats: {
       ...mockDashboardStats,
-      totalScans: mockRecentScans.length + 1480 + liveReportsCount,
-      threatsFound: mockRecentScans.filter((s) => s.verdict === 'MALICIOUS').length + 245,
-      cleanFiles: mockRecentScans.filter((s) => s.verdict === 'CLEAN').length + 1150,
-      suspiciousFiles: mockRecentScans.filter((s) => s.verdict === 'SUSPICIOUS').length + 77,
+      totalScans: allScans.length + 1480 + liveReportsCount,
+      threatsFound: allScans.filter((s) => s.verdict === 'MALICIOUS').length + 245,
+      cleanFiles: allScans.filter((s) => s.verdict === 'CLEAN').length + 1150,
+      suspiciousFiles: allScans.filter((s) => s.verdict === 'SUSPICIOUS').length + 77,
     },
     timeline: mockScanTimeline,
     categories: mockThreatCategories,
-    recentScans: mockRecentScans.slice(0, 6),
+    recentScans: allScans.slice(0, 6),
   };
 }
