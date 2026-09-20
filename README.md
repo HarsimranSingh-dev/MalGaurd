@@ -3,7 +3,7 @@
 > A transparent malware analysis dashboard and triage tool for Windows PE binaries.
 
 **Live Demo:** [mal-guard.vercel.app](https://mal-guard.vercel.app/)  
-**Backend API:** Hosted on Render  
+**Backend API:** Hosted On Render  
 
 ---
 
