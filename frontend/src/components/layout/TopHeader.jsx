@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Menu, 
   Search, 
@@ -8,6 +8,7 @@ import {
   PlusCircle, 
   RefreshCw 
 } from 'lucide-react';
+import { checkBackendHealth } from '../../services/api';
 
 export default function TopHeader({ 
   currentTab, 
@@ -15,6 +16,24 @@ export default function TopHeader({
   setMobileOpen,
   onQuickScan 
 }) {
+  const [backendStatus, setBackendStatus] = useState('checking');
+
+  useEffect(() => {
+    let isMounted = true;
+    async function verifyBackend() {
+      const health = await checkBackendHealth();
+      if (isMounted) {
+        setBackendStatus(health?.status === 'healthy' ? 'online' : 'standby');
+      }
+    }
+    verifyBackend();
+    const interval = setInterval(verifyBackend, 30000);
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, []);
+
   const titles = {
     dashboard: { title: 'Security Operations Center', subtitle: 'Real-time telemetry, threat landscape & incident monitoring' },
     scanner: { title: 'Deep File Threat Analyzer', subtitle: 'Static PE disassembly, entropy analysis, and AI model inference' },
@@ -51,10 +70,18 @@ export default function TopHeader({
 
         {/* Right side controls */}
         <div className="flex items-center space-x-2.5 sm:space-x-3">
-          {/* Status badge */}
+          {/* Live Backend status badge */}
           <div className="hidden md:flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-[#f1ede6] border border-[#e5e0d8] text-xs">
-            <span className="h-2 w-2 rounded-full bg-[#226343]"></span>
-            <span className="text-[#525866] font-mono text-[11px]">API Contract: Ready</span>
+            <span className={`h-2 w-2 rounded-full ${
+              backendStatus === 'online' 
+                ? 'bg-[#226343] animate-pulse' 
+                : backendStatus === 'checking' 
+                ? 'bg-[#9a5b04]' 
+                : 'bg-[#7c828d]'
+            }`}></span>
+            <span className="text-[#525866] font-mono text-[11px]">
+              {backendStatus === 'online' ? 'API: Connected (Render)' : backendStatus === 'checking' ? 'Checking API...' : 'API: Standby'}
+            </span>
           </div>
 
           {/* Quick Scan CTA Button */}
