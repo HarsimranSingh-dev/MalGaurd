@@ -8,46 +8,46 @@ export default {
   theme: {
     extend: {
       colors: {
-        // New neutral-charcoal surface system (no blue tint)
+        // Warm off-white + charcoal + muted green color palette
         surface: {
-          canvas:    '#0e0f11',   // deepest bg
-          base:      '#141618',   // sidebar / header
-          panel:     '#191b1e',   // cards / panels
-          elevated:  '#1e2126',   // raised elements
-          well:      '#0b0c0e',   // code wells / terminals
-          hover:     '#222629',   // hover bg
+          canvas:    '#f8f7f4',   // neutral primary background
+          base:      '#f1ede6',   // sidebar / header / secondary section background
+          panel:     '#ffffff',   // solid cards / panels
+          elevated:  '#f5f2eb',   // elevated elements
+          well:      '#f3efe8',   // code wells / table headers
+          hover:     '#eae5dc',   // hover bg
         },
-        // Border system
+        // Border system - subtle, warm, neutral
         edge: {
-          subtle:    '#21252c',   // barely visible
-          default:   '#272c34',   // standard
-          strong:    '#313840',   // interactive
-          focus:     '#3e4650',   // hover/focus
+          subtle:    '#eeeae2',
+          default:   '#e5e0d8',
+          strong:    '#d4cec4',
+          focus:     '#226343',
         },
-        // Accent: muted sage green — professional, distinctive, not neon
+        // Accent: restrained muted forest green — professional, distinctive, natural
         accent: {
-          50:  '#edf5f0',
-          100: '#d4e9dc',
-          200: '#a8d4bc',
-          300: '#78bd99',
-          400: '#52a97a',   // light text on dark
-          500: '#3f9166',   // main accent
-          600: '#347856',   // button background
-          700: '#2a6346',   // button hover
-          800: '#1f4e38',
-          900: '#143224',
+          50:  '#f2f8f4',
+          100: '#e3f1e8',
+          200: '#c5e3d1',
+          300: '#97cdad',
+          400: '#64b084',
+          500: '#226343',   // main accent
+          600: '#1b5036',   // button hover
+          700: '#153e2a',
+          800: '#103020',
+          900: '#0a1f15',
         },
-        // Semantic — kept functional, same as before
+        // Semantic status tokens - solid, high-contrast, professional
         soc: {
-          crimson:      '#e11d48',
-          crimsonMuted: 'rgba(225, 29, 72, 0.10)',
-          amber:        '#d97706',
-          amberMuted:   'rgba(217, 119, 6, 0.10)',
-          emerald:      '#059669',
-          emeraldMuted: 'rgba(5, 150, 105, 0.10)',
-          text:         '#dde1e7',
-          subtext:      '#8b909a',
-          muted:        '#565c68',
+          crimson:      '#a81c1c',
+          crimsonMuted: '#fdf2f2',
+          amber:        '#9a5b04',
+          amberMuted:   '#fef8eb',
+          emerald:      '#1b5e39',
+          emeraldMuted: '#edf7f0',
+          text:         '#1c1e21',   // primary dark readable text
+          subtext:      '#525866',   // secondary text
+          muted:        '#7c828d',   // subtle muted text
         },
       },
       fontFamily: {
@@ -55,10 +55,11 @@ export default {
         mono: ['JetBrains Mono', 'Fira Code', 'monospace']
       },
       boxShadow: {
-        'subtle': '0 1px 2px 0 rgba(0, 0, 0, 0.5)',
-        'panel':  '0 1px 3px 0 rgba(0, 0, 0, 0.5), 0 1px 2px -1px rgba(0, 0, 0, 0.4)',
-        'panel-hover': '0 4px 12px -2px rgba(0, 0, 0, 0.6), 0 2px 4px -2px rgba(0, 0, 0, 0.4)',
-        'card-glow': '0 1px 3px 0 rgba(0, 0, 0, 0.5)'
+        'subtle': '0 1px 2px 0 rgba(0, 0, 0, 0.04)',
+        'panel':  '0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.03)',
+        'panel-hover': '0 4px 12px -2px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.04)',
+        'card-glow': '0 1px 3px 0 rgba(0, 0, 0, 0.05)',
+        'neon-cyan': '0 1px 3px 0 rgba(0, 0, 0, 0.05)' // override neon cyan shadow
       }
     },
   },
