@@ -1,12 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Menu, 
-  Search, 
   ShieldCheck, 
-  Bell, 
-  Cpu, 
   PlusCircle, 
-  RefreshCw 
 } from 'lucide-react';
 import { checkBackendHealth } from '../../services/api';
 
@@ -37,7 +33,6 @@ export default function TopHeader({
   const titles = {
     dashboard: { title: 'Security Operations Center', subtitle: 'Real-time telemetry, threat landscape & incident monitoring' },
     scanner: { title: 'Deep File Threat Analyzer', subtitle: 'Static PE disassembly, entropy analysis, and AI model inference' },
-    symptoms: { title: 'Symptom-Based Assistant & Playbook Generator', subtitle: 'Natural language triage, malware matching, and containment playbooks' },
     history: { title: 'Forensic Scan Audit History', subtitle: 'Immutable log of historical file hashes, verdicts, and indicators' },
     encyclopedia: { title: 'Malware Family Encyclopedia', subtitle: 'Comprehensive MITRE ATT&CK taxonomy and remediation guides' },
     simulation: { title: 'Safe Sandbox Simulation', subtitle: 'Interactive live demonstration of malware detection vectors' },
@@ -96,14 +91,6 @@ export default function TopHeader({
             <span>Analyze File</span>
           </button>
 
-          {/* Quick Symptom CTA button */}
-          <button
-            onClick={() => setCurrentTab('symptoms')}
-            className="hidden sm:flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-[#f1ede6] hover:bg-[#eae5dc] text-[#1c1e21] border border-[#e5e0d8] text-xs font-medium transition-colors"
-          >
-            <Cpu className="w-3.5 h-3.5 text-[#226343]" />
-            <span>Symptom Triage</span>
-          </button>
         </div>
       </div>
     </header>

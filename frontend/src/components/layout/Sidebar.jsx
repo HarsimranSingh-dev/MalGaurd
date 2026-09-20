@@ -3,7 +3,6 @@ import {
   ShieldAlert, 
   LayoutDashboard, 
   FileSearch, 
-  Stethoscope, 
   History, 
   BookOpen, 
   Terminal, 
@@ -17,7 +16,6 @@ export default function Sidebar({ currentTab, setCurrentTab, mobileOpen, setMobi
   const navItems = [
     { id: 'dashboard', label: 'SOC Overview', icon: LayoutDashboard, badge: 'Live' },
     { id: 'scanner', label: 'File Threat Analyzer', icon: FileSearch, badge: 'AI Engine' },
-    { id: 'symptoms', label: 'Symptom Diagnosis', icon: Stethoscope, badge: 'Playbook' },
     { id: 'history', label: 'Scan Audit History', icon: History },
     { id: 'encyclopedia', label: 'Threat Encyclopedia', icon: BookOpen, badge: 'MITRE' },
     { id: 'simulation', label: 'Safe Simulation Demo', icon: Terminal, badge: 'Sandbox' },

@@ -3,7 +3,6 @@ import Sidebar from './components/layout/Sidebar';
 import TopHeader from './components/layout/TopHeader';
 import DashboardPage from './pages/DashboardPage';
 import FileScannerPage from './pages/FileScannerPage';
-import SymptomCheckerPage from './pages/SymptomCheckerPage';
 import ScanHistoryPage from './pages/ScanHistoryPage';
 import MalwareEncyclopediaPage from './pages/MalwareEncyclopediaPage';
 import SafeSimulationPage from './pages/SafeSimulationPage';
@@ -40,10 +39,6 @@ export default function App() {
 
           {currentTab === 'scanner' && (
             <FileScannerPage />
-          )}
-
-          {currentTab === 'symptoms' && (
-            <SymptomCheckerPage />
           )}
 
           {currentTab === 'history' && (

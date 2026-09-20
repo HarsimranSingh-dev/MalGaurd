@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShieldCheck, Stethoscope, Terminal, ArrowRight, Sparkles } from 'lucide-react';
+import { ShieldCheck, Terminal, ArrowRight, Sparkles } from 'lucide-react';
 
 export default function QuickActionBanner({ onNavigate }) {
   return (
@@ -14,7 +14,7 @@ export default function QuickActionBanner({ onNavigate }) {
             Next-Gen Threat Analysis & Incident Triage
           </h2>
           <p className="mt-1.5 text-sm text-[#525866] leading-relaxed">
-            Inspect suspicious PE executables, compute Shannon entropy, map adversary tradecraft to the MITRE ATT&CK framework, or generate an automated containment playbook from symptom descriptions.
+            Inspect suspicious PE executables, compute Shannon entropy, and map adversary tradecraft to the MITRE ATT&CK framework.
           </p>
         </div>
 
@@ -26,14 +26,6 @@ export default function QuickActionBanner({ onNavigate }) {
             <ShieldCheck className="w-4 h-4" />
             <span>Scan Suspicious File</span>
             <ArrowRight className="w-4 h-4" />
-          </button>
-
-          <button
-            onClick={() => onNavigate('symptoms')}
-            className="flex items-center space-x-2 px-4 py-2.5 rounded-lg bg-[#f1ede6] hover:bg-[#eae5dc] text-[#1c1e21] border border-[#e5e0d8] text-sm font-medium transition-all"
-          >
-            <Stethoscope className="w-4 h-4 text-[#226343]" />
-            <span>Symptom Assistant</span>
           </button>
 
           <button
