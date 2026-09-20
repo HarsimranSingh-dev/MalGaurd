@@ -8,7 +8,6 @@ import {
   RefreshCw 
 } from 'lucide-react';
 import StatCard from '../components/dashboard/StatCard';
-import ThreatActivityChart from '../components/dashboard/ThreatActivityChart';
 import RecentScansTable from '../components/dashboard/RecentScansTable';
 import QuickActionBanner from '../components/dashboard/QuickActionBanner';
 import IncidentReportModal from '../components/scanner/IncidentReportModal';
@@ -44,7 +43,7 @@ export default function DashboardPage({ onNavigate }) {
     );
   }
 
-  const { stats, timeline, categories, recentScans } = data;
+  const { stats, recentScans } = data;
 
   return (
     <div className="space-y-8">
@@ -94,8 +93,6 @@ export default function DashboardPage({ onNavigate }) {
         />
       </div>
 
-      {/* Telemetry Chart & Category Breakdown */}
-      <ThreatActivityChart timeline={timeline} categories={categories} />
 
       {/* Recent Scans Table */}
       <RecentScansTable 
