@@ -170,4 +170,4 @@ MalGuard maps static binary features to common adversary techniques:
 
 ## Safety Note
 
-MalGuard uses **purely static analysis**—it parses binary structure, bytes, and headers without actually launching or executing the file. Still, if you are testing real-world suspicious samples, always handle them inside a dedicated sandbox or isolated virtual machine.
+MalGuard uses *purely static analysis*—it parses binary structure, bytes, and headers without actually launching or executing the file. Still, if you are testing real-world suspicious samples, always handle them inside a dedicated sandbox or isolated virtual machine.
